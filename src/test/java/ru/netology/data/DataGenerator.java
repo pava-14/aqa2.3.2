@@ -12,18 +12,18 @@ public class DataGenerator {
         private RegistrationInfo() {
         }
 
-        private static String getUserStatus(String Locale) {
+        public static String getUserStatus(String Locale) {
             Faker faker = new Faker(new Locale(Locale));
             String[] userStatusList = new String[]{"active", "blocked"};
             return userStatusList[faker.random().nextInt(0, userStatusList.length - 1)];
         }
 
-        private static String getUserPassword(String Locale) {
+        public static String getUserPassword(String Locale) {
             Faker faker = new Faker(new Locale(Locale));
             return faker.internet().password();
         }
 
-        private static String getUserName(String Locale) {
+        public static String getUserName(String Locale) {
             Faker faker = new Faker(new Locale(Locale));
             return faker.name().username();
         }
