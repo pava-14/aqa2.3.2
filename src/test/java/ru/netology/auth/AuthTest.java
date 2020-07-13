@@ -53,7 +53,7 @@ public class AuthTest {
                 .when() // "когда"
                 .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
                 .then() // "тогда ожидаем"
-                .statusCode(500); // код 200 OK
+                .statusCode(500); // код 500 server error
     }
 
     @Test
@@ -96,5 +96,4 @@ public class AuthTest {
                 .then() // "тогда ожидаем"
                 .statusCode(200); // код 200 OK
     }
-
 }
