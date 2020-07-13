@@ -40,7 +40,6 @@ public class AuthTest {
                 .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
                 .then() // "тогда ожидаем"
                 .statusCode(200); // код 200 OK
-
     }
 
     @Test
@@ -84,4 +83,18 @@ public class AuthTest {
                 .then() // "тогда ожидаем"
                 .statusCode(200); // код 200 OK
     }
+
+    @Test
+    public void shouldCreateWithBlockedUserStatus() {
+        UserInfo user = DataGenerator.RegistrationInfo.generateBlockedUserInfo("ru");
+        // сам запрос
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(user) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
+    }
+
 }
