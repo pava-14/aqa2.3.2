@@ -63,7 +63,7 @@ public class ApiUsersTest {
 
     @Test
     public void shouldLoginWithWrongUsername() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", true);
+        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", false);
         setUpUser(user);
         loginForm(DataGenerator.RegistrationInfo.makeUserName("ru"), user.getPassword());
         $(withText("Неверно указан логин или пароль")).waitUntil(visible, 15000);
@@ -71,7 +71,7 @@ public class ApiUsersTest {
 
     @Test
     public void shouldLoginWithWrongPassword() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", true);
+        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", false);
         setUpUser(user);
         loginForm(user.getLogin(), DataGenerator.RegistrationInfo.makeUserPassword("ru"));
         $(withText("Неверно указан логин или пароль")).waitUntil(visible, 15000);
