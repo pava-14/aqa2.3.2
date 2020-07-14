@@ -22,7 +22,7 @@ public class AuthTest {
             .build();
 
     @Test
-    public void shouldRewriteUsersExists() {
+    public void shouldRewriteExistsUser() {
         UserInfo user = DataGenerator.RegistrationInfo.generateActiveUserInfo("ru");
         // сам запрос
         given() // "дано"
@@ -95,5 +95,47 @@ public class AuthTest {
                 .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
                 .then() // "тогда ожидаем"
                 .statusCode(200); // код 200 OK
+    }
+
+    @Test
+    public void shouldLoginAterCreateWithActiveUserStatus() {
+        UserInfo user = DataGenerator.RegistrationInfo.generateActiveUserInfo("ru");
+        // сам запрос
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(user) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
+
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(user) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/auth") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
+    }
+
+    @Test
+    public void shouldLoginAterCreateWithBlockedUserStatus() {
+        UserInfo user = DataGenerator.RegistrationInfo.generateBlockedUserInfo("ru");
+        // сам запрос
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(user) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
+
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(user) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/auth") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(400); // код 400 OK
     }
 }
