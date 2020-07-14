@@ -1,4 +1,4 @@
-package ru.netology.auth;
+package ru.netology.test;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -11,7 +11,7 @@ import ru.netology.data.UserInfo;
 
 import static io.restassured.RestAssured.given;
 
-public class AuthTest {
+public class ApiUsersTest {
     private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
@@ -53,7 +53,7 @@ public class AuthTest {
                 .when() // "когда"
                 .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
                 .then() // "тогда ожидаем"
-                .statusCode(500); // код 500 server error
+                .statusCode(500); // код 500
     }
 
     @Test
@@ -136,6 +136,6 @@ public class AuthTest {
                 .when() // "когда"
                 .post("/api/auth") // на какой путь, относительно BaseUri отправляем запрос
                 .then() // "тогда ожидаем"
-                .statusCode(400); // код 400 OK
+                .statusCode(400); // код 400
     }
 }
