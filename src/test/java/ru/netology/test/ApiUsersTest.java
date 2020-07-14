@@ -5,10 +5,16 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.netology.data.DataGenerator;
 import ru.netology.data.UserInfo;
 
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selectors.withText;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static io.restassured.RestAssured.given;
 
 public class ApiUsersTest {
@@ -21,121 +27,53 @@ public class ApiUsersTest {
             .log(LogDetail.ALL)
             .build();
 
-    @Test
-    public void shouldRewriteExistsUser() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateActiveUserInfo("ru");
+    private void setUpUser(UserInfo user) {
         // сам запрос
         given() // "дано"
                 .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
-
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
+                .body(user)
                 .when() // "когда"
                 .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
                 .then() // "тогда ожидаем"
                 .statusCode(200); // код 200 OK
     }
 
-    @Test
-    public void shouldCreateWithEmptyUserStatus() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateActiveUserInfo("ru");
-        user.setStatus("");
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(500); // код 500
+    private void loginForm (String login, String password) {
+        open("http://localhost:9999");
+        $("[data-test-id=login] input").setValue(login);
+        $("[data-test-id=password] input").setValue(password);
+        $("[data-test-id=action-login]").click();
     }
 
     @Test
-    public void shouldCreateWithInvalidUserLogin() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateActiveUserInfo("ru");
-        user.setLogin("   ");
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
+    public void shouldLoginExistsActiveUser() {
+        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", false);
+        setUpUser(user);
+        loginForm(user.getLogin(), user.getPassword());
+        $(byText("Личный кабинет")).waitUntil(visible, 15000);
     }
 
     @Test
-    public void shouldCreateWithInvalidUserPassword() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateActiveUserInfo("ru");
-        user.setPassword("   ");
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
+    public void shouldLoginExistsBlockedUser() {
+        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", true);
+        setUpUser(user);
+        loginForm(user.getLogin(), user.getPassword());
+        $(withText("Пользователь заблокирован")).waitUntil(visible, 15000);
     }
 
     @Test
-    public void shouldCreateWithBlockedUserStatus() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateBlockedUserInfo("ru");
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
+    public void shouldLoginWithWrongUsername() {
+        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", true);
+        setUpUser(user);
+        loginForm(DataGenerator.RegistrationInfo.makeUserName("ru"), user.getPassword());
+        $(withText("Неверно указан логин или пароль")).waitUntil(visible, 15000);
     }
 
     @Test
-    public void shouldLoginAterCreateWithActiveUserStatus() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateActiveUserInfo("ru");
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
-
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/auth") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
-    }
-
-    @Test
-    public void shouldLoginAterCreateWithBlockedUserStatus() {
-        UserInfo user = DataGenerator.RegistrationInfo.generateBlockedUserInfo("ru");
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
-
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(user) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/auth") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(400); // код 400
+    public void shouldLoginWithWrongPassword() {
+        UserInfo user = DataGenerator.RegistrationInfo.generateUserInfo("ru", true);
+        setUpUser(user);
+        loginForm(user.getLogin(), DataGenerator.RegistrationInfo.makeUserPassword("ru"));
+        $(withText("Неверно указан логин или пароль")).waitUntil(visible, 15000);
     }
 }

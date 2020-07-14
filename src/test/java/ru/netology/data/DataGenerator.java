@@ -12,12 +12,6 @@ public class DataGenerator {
         private RegistrationInfo() {
         }
 
-        public static String makeRandomUserStatus(String Locale) {
-            Faker faker = new Faker(new Locale(Locale));
-            String[] userStatusList = new String[]{"active", "blocked"};
-            return userStatusList[faker.random().nextInt(0, userStatusList.length - 1)];
-        }
-
         public static String makeUserPassword(String Locale) {
             Faker faker = new Faker(new Locale(Locale));
             return faker.internet().password();
@@ -28,27 +22,11 @@ public class DataGenerator {
             return faker.name().username();
         }
 
-        public static UserInfo generateRandomUserInfo(String Locale) {
+        public static UserInfo generateUserInfo(String Locale, boolean isBlocked) {
             return new UserInfo(
                     makeUserName(Locale),
                     makeUserPassword(Locale),
-                    makeRandomUserStatus(Locale)
-            );
-        }
-
-        public static UserInfo generateBlockedUserInfo(String Locale) {
-            return new UserInfo(
-                    makeUserName(Locale),
-                    makeUserPassword(Locale),
-                    "blocked"
-            );
-        }
-
-        public static UserInfo generateActiveUserInfo(String Locale) {
-            return new UserInfo(
-                    makeUserName(Locale),
-                    makeUserPassword(Locale),
-                    "active"
+                    (isBlocked) ? "blocked": "active"
             );
         }
     }
